@@ -1,0 +1,5 @@
+i = list(input())
+print("Thousandth digit: {}".format(i[0]))
+print("Hundredth digit: {}".format(i[1]))
+print("Tenth digit: {}".format(i[2]))
+print("Unit digit: {}".format(i[3]))
