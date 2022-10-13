@@ -1,6 +1,4 @@
 # SchoolHosted
-basically answers. what else do you expect??
-
-> feel free to copy
+## basically answers
 
 ## submit an issue if u find any problems
