@@ -42,7 +42,6 @@ while True:
                         formatted[str(i['route'])]["ETA"].append(i["eta"])         
             else:
                 print("Request failed with status code:", response.status_code)
-        print(formatted)
         for i in formatted:
             formatted[i]['ETA'].sort()
             s = []
