@@ -46,7 +46,6 @@ while True:
             formatted[i]['ETA'].sort()
             s = []
             for j in formatted[i]["ETA"]:
-                print(j)
                 diff = calctimediff(j, datetime.now(pytz.timezone("Hongkong")).isoformat())
                 mins = diff//60
                 secs = diff%60
