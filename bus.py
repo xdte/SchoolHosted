@@ -57,5 +57,5 @@ while True:
         with placeholder.container():
             st.write(f"{direction[0]['name']}")
             st.table(df)
-            st.write(f"Last Updated: {str(datetime.now(pytz.timezone('Hongkong')))[:-7]}")
+            st.write(f"Last Updated: {str(datetime.now(pytz.timezone('Hongkong')))[:-13]}")
         time.sleep(8)
