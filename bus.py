@@ -11,17 +11,26 @@ def calctimediff(time1, time2):
     diff = time1-time2
     return abs(int(diff.total_seconds()))
 
-stops = [[{"id": "942E95B4336BDFA7", "name": "上行"},
-         {"id": "9A16E73DC0B9AF6C", "name": "上行"},
-         {"id": "29740CCBBD82FC33", "name": "上行"}],
-         [{"id": "3BA9C90738A8600D", "name": "下行"},
-         {"id": "58611212645F0AB1", "name": "下行"}],
-         [{"id": "6D1FFB57C26F1108", "name": "彩雲"},
-         {"id": "09680C5849BFA077", "name": "彩雲"},
-         {"id": "177A516A81E9DEA5", "name": "彩雲"}]]
+stops = [[{"id": "942E95B4336BDFA7", "name": "Uphill"},
+         {"id": "9A16E73DC0B9AF6C", "name": "Uphill"}],
+         [{"id": "29740CCBBD82FC33", "name": "Uphill"}],
+         [{"id": "3BA9C90738A8600D", "name": "Downhill"}],
+         [{"id": "58611212645F0AB1", "name": "Downhill"}],
+         [{"id": "6D1FFB57C26F1108", "name": "Choi Wan Bus Terminus"},
+         {"id": "09680C5849BFA077", "name": "Choi Wan Bus Terminus"},
+         {"id": "177A516A81E9DEA5", "name": "Choi Wan Bus Terminus"}]]
 url = "https://data.etabus.gov.hk/v1/transport/kmb/stop-eta/"
+st.set_page_config(page_title="Bus ETA Information")
 placeholder = st.empty()
 container = st.container()
+hide_st_style = """
+            <style>
+            #MainMenu {visibility: hidden;}
+            footer {visibility: hidden;}
+            header {visibility: hidden;}
+            </style>
+            """
+st.markdown(hide_st_style, unsafe_allow_html=True)
 
 while True:
     for direction in stops:
@@ -31,7 +40,7 @@ while True:
             if response.status_code == 200:
                 data = response.json()['data']
                 for i in data:
-                    if i['eta'] != None and i["dest_en"] != "CHOI WAN":
+                    if i['eta'] != None and i["dest_en"] != "CHOI WAN" and i['eta_seq'] <= 3:
                         try:
                             tmp = formatted[str(i['route'])]
                             del tmp
@@ -43,19 +52,26 @@ while True:
             else:
                 print("Request failed with status code:", response.status_code)
         for i in formatted:
-            formatted[i]['ETA'].sort()
+            formatted[i]['ETA'] = sorted(list(set(formatted[i]['ETA'])))
             s = []
             for j in formatted[i]["ETA"]:
                 diff = calctimediff(j, datetime.now(pytz.timezone("Hongkong")).isoformat())
                 mins = diff//60
                 secs = diff%60
-                s.append(f"{mins} m {secs} s")
-            formatted[i]['ETA'] = ' | '.join(s)
+                if mins == 0:
+                    s.append("<1")
+                else:
+                    if secs > 30:
+                        mins+=1
+                    s.append(f"{mins}")
+            formatted[i]['ETA'] = '     | '.join(s)
             del s
 
         df = pd.DataFrame(formatted).transpose()
         with placeholder.container():
-            st.write(f"{direction[0]['name']}")
+            st.header('Bus ETA Information')
+            st.write(f"{direction[0]['name']} {stops.index(direction)+1}/{len(stops)}")
             st.table(df)
             st.write(f"Last Updated: {str(datetime.now(pytz.timezone('Hongkong')))[:-13]}")
-        time.sleep(8)
+            st.caption("Made with ❤ by Bonfire")
+        time.sleep(5.5)
